@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter_ble_supabase_socketio_demo/provider/appwrite_provider.dart';
 import 'package:ble_test_app/widgets.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:provider/provider.dart';
@@ -60,7 +59,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             Expanded(
               child: StreamBuilder<List<DiscoveredDevice>?>(
-                  stream: bLEProvider.getDiscoveredDeviceController.stream,
+                  stream: bLEProvider.getDiscoveredDeviceController.stream,  // help
                   builder: ((context, snapshot) {
                     List<DiscoveredDevice>? scannedDevices = snapshot.data;
                     if (scannedDevices != null) {
@@ -89,6 +88,8 @@ class _HomePageState extends State<HomePage> {
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.bold)),
                                         Text(scannedDevices[index].id),
+                                        Text("$index"),
+                                        Text(scannedDevices[index].toString()),
                                       ],
                                     ),
                                   ),
@@ -161,7 +162,7 @@ class _HomePageState extends State<HomePage> {
                                 const SizedBox(
                                   width: 10,
                                 ),
-                                const Text("Scan BLE Devices"),
+                                const Text("Scan BLE Devices =w="),
                               ],
                             ),
                             style: ElevatedButton.styleFrom(

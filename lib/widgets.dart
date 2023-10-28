@@ -3,7 +3,8 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
-import 'package:location_permissions/location_permissions.dart';
+// import 'package:location_permissions/location_permissions.dart' show PermissionStatus;
+import 'package:permission_handler/permission_handler.dart';
 
 class BLEProvider extends ChangeNotifier {
   /// Initializing
@@ -54,30 +55,35 @@ class BLEProvider extends ChangeNotifier {
       discoveredCharacteristic = [];
       notifyListeners();
 
-      PermissionStatus permission;
-      permission = await LocationPermissions().checkPermissionStatus();
+      // PermissionStatus permission;
+      PermissionStatus locationPermission = await Permission.location.request();
+      PermissionStatus bleScan = await Permission.bluetoothScan.request();
+      PermissionStatus bleConnect = await Permission.bluetoothConnect.request();
+      // permission = await LocationPermissions().checkPermissionStatus();
 
-      if (!permGranted && permission != PermissionStatus.granted) {
-        if (Platform.isAndroid) {
-          permission = await LocationPermissions().requestPermissions();
-          if (permission == PermissionStatus.granted) permGranted = true;
-        } else if (Platform.isIOS) {
-          permGranted = true;
-        }
-        notifyListeners();
-      } else if (permission == PermissionStatus.granted) {
-        permGranted = true;
-        notifyListeners();
-      }
+      // if (!permGranted) {
+      //   if (Platform.isAndroid) {
+      //     permission = await LocationPermissions().requestPermissions();
+      //     if (permission == PermissionStatus.granted) permGranted = true;
+      //   } else if (Platform.isIOS) {
+      //     permGranted = true;
+      //   }
+      //   notifyListeners();
+      // } else if (permission == PermissionStatus.granted) {
+      //   permGranted = true;
+      //   notifyListeners();
+      // }
 
-      if (permGranted) {
+      if (!bleScan.isDenied) {
         _scanDeviceStream =
-            _ble.scanForDevices(withServices: []).listen((device) {
+            _ble.scanForDevices(withServices: [], scanMode: ScanMode.lowLatency, requireLocationServicesEnabled: false).listen((device) {
           if (device.name != "" &&
               (discoveredDevices
                   .where((element) => element.name == device.name)
                   .isEmpty)) {
             log(device.name);
+            log("hello world");
+            stderr.writeln('print me');
             discoveredDevices.add(device);
             _discoveredDeviceController.sink.add(discoveredDevices);
             notifyListeners();
